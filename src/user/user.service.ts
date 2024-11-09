@@ -47,7 +47,7 @@ export class UserService {
     ): Promise<User | null> {
         const userExists = this.prisma.user.findUnique({ where: UserWhereUniqueInput })
 
-        if (!userExists) return
+        if (!userExists) return 
 
         return this.prisma.user.delete({ where: UserWhereUniqueInput })
     }
