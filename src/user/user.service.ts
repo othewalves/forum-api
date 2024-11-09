@@ -21,7 +21,7 @@ export class UserService {
             where: UserWhereUniqueInput,
         })
     }
-    
+
     async createUser(data: Prisma.UserCreateInput) {
 
         const hashPassword = await bcrypt.hash(data.password, 10);
@@ -40,6 +40,16 @@ export class UserService {
             data,
             where
         })
+    }
+
+    async deleteUser(
+        UserWhereUniqueInput: Prisma.UserWhereUniqueInput
+    ): Promise<User | null> {
+        const userExists = this.prisma.user.findUnique({ where: UserWhereUniqueInput })
+
+        if (!userExists) return
+
+        return this.prisma.user.delete({ where: UserWhereUniqueInput })
     }
 
 }
