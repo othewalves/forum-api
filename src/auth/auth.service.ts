@@ -4,15 +4,20 @@ import { Inject, NotFoundException, UnauthorizedException } from '@nestjs/common
 import { NotFoundError } from 'rxjs';
 
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 export class AuthService {
 
     @Inject()
     private readonly userService: UserService
 
+    @Inject()
+    private jwtService: JwtService
+
+
     async signin(
         email: string,
         pass: string
-    ): Promise<Omit<User, 'password'>> {
+    ): Promise<{ access_token: string }> {
         const user = await this.userService.getUser({ email })
 
         if (!user) throw new NotFoundException('Usuário inválido')
@@ -23,7 +28,9 @@ export class AuthService {
 
         const { password, ...result } = user
 
-        return result
+        const payload = { sub: user.id }
+
+        return { access_token: await this.jwtService.signAsync(payload) }
 
     }
 }
